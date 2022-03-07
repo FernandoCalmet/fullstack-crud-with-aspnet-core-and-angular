@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "c93f9816-6d41-4c8c-bd6e-db0f91e77f32": {
+      "ProjectGuid": "c93f9816-6d41-4c8c-bd6e-db0f91e77f32",
+      "DisplayName": "CRUDWebAPI",
+      "ColorIndex": 0
+    }
+  },
+  "NextColorIndex": 1
+}
