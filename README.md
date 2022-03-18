@@ -9,6 +9,8 @@
 
 * [Acerca del proyecto](#acerca-del-proyecto)
 * [Instalación](#instalación)
+* [Resumen Teórico](#resumen-teórico)
+* [Despliegue en Azure](#despliegue-en-azure)
 * [Dependencias](#dependencias)
 * [Licencia](#licencia)
 
@@ -299,6 +301,188 @@ Ruta: `/WebApi.csproj`
 El csproj (proyecto C#) es un archivo basado en MSBuild que contiene el marco de destino y la información de dependencia del paquete NuGet para la aplicación. La función `ImplicitUsings` está habilitada, lo que le dice al compilador que genere automáticamente un conjunto de directivas de uso globales basadas en el tipo de proyecto, lo que elimina la necesidad de incluir muchas declaraciones de uso comunes. Las instrucciones de uso globales se generan automáticamente cuando crea el proyecto y se pueden encontrar en el archivo `/obj/Debug/net6.0/WebApi.GlobalUsings.g.cs`.
 
 Para obtener más información sobre el archivo de proyecto de C#, consulte .NET + MSBuild - Archivo de proyecto de C# (.csproj) en pocas palabras .
+
+## DESPLIEGUE EN AZURE
+
+### Cree un nuevo servidor de Windows en Microsoft Azure
+
+Antes de hacer nada, necesitamos un servidor en el que podamos trabajar, siga estos pasos para activar una nueva instancia de Windows Server 2019 utilizando el servicio Azure Virtual Machines.
+
+1. Inicie sesión en Azure Portal en https://portal.azure.com/ . Si aún no tiene una cuenta de Azure, puede crear una gratuita en https://azure.microsoft.com/free .
+
+2. Vaya a la sección de servicio de Máquinas Virtuales.
+
+3. Haga clic en "Agregar" para crear una nueva máquina virtual.
+
+4. Lo esencial
+- **Grupo de recursos** : haga clic en "Crear nuevo" e ingrese un nombre para el grupo de recursos (por ejemplo, mi grupo de recursos).
+- **Nombre de la máquina virtual** : ingrese un nombre para la máquina virtual (por ejemplo, mi servidor).
+- **Imagen** : seleccione "Windows Server 2019 Datacenter".
+- **Tamaño** : haga clic en "Cambiar tamaño", seleccione "B1ms" y haga clic en el botón "Seleccionar". Esta máquina virtual tiene 2 GB de RAM, que es aproximadamente el mínimo que desea ejecutar para Windows Server.
+- **Nombre de usuario** : ingrese el nombre de usuario del administrador para el servidor.
+- **Contraseña** : ingrese la contraseña de administrador para el servidor.
+- **Confirmar contraseña** : vuelva a ingresar la contraseña de administrador para el servidor.
+- **Seleccione los puertos entrantes** : permita el tráfico "HTTP (80)" y "RDP (3389)" a través del servidor.
+
+5. **Gestión** : establezca la supervisión de diagnósticos de arranque en "Desactivado".
+
+6. **Revisar + crear** : haz clic en "Crear".
+
+### Conéctese a la instancia de Azure Windows Server a través de RDP
+
+Una vez que la VM de Azure Windows Server esté lista, puede conectarse a ella a través de RDP (Protocolo de escritorio remoto). Si está en Windows, debe tener un cliente RDP instalado de forma predeterminada, si está en Mac OSX, puede instalar un cliente RDP desde la tienda de aplicaciones aquí .
+
+1. Cuando finalice la implementación, haga clic en "Ir al recurso" para acceder a la página de descripción general de la máquina virtual de Azure.
+
+2. En la página de descripción general de Azure Virtual Machine, haga clic en "Conectar".
+
+3. Haga clic en "Descargar archivo RDP".
+
+4. Abra el archivo RDP descargado. Si ve un mensaje que indica que no se puede identificar al editor, haga clic en "Conectar".
+
+5. Ingrese el nombre de usuario y la contraseña del paso anterior y haga clic en "Aceptar". Si ve un mensaje que indica que no se puede identificar la identidad de la computadora remota, haga clic en "Sí", esta advertencia es solo porque es un certificado SSL autofirmado y no hay nada de qué preocuparse.
+
+### Configuración del servidor web con IIS (Servicios de información de Internet)
+
+Cuando se conecte por primera vez a la instancia de Azure Windows Server a través de RDP, debería ver la interfaz del Administrador del servidor.
+
+1. **Administrador del servidor**
+- Haga clic en "Agregar roles y características".
+- **Tipo de instalación** : seleccione "Instalación basada en funciones o funciones" y haga clic en Siguiente.
+- **Selección de servidor** : deje el valor predeterminado y haga clic en Siguiente.
+- **Funciones del servidor** : marque la casilla "Servidor web (IIS)", luego haga clic en el botón "Agregar características" en la ventana emergente y haga clic en Siguiente.
+- **Funciones** : deje el valor predeterminado y haga clic en Siguiente.
+- **Rol de servidor web (IIS)** : deje el valor predeterminado y haga clic en Siguiente.
+- **Servicios de función** : deje los valores predeterminados y haga clic en Siguiente.
+- **Confirmación** - Haga clic en instalar.
+- **Resultados** : espere a que se complete la instalación y haga clic en cerrar.
+
+2. Descargue e instale el paquete de alojamiento de .NET Core desde https://www.microsoft.com/net/permalink/dotnetcore-current-windows-runtime-bundle-installer . Haga esto descargando el archivo a su máquina local y copiándolo en el servidor a través del escritorio remoto, o agregando `https://*.microsoft.com` a los "Sitios confiables" en la configuración de seguridad de Internet Explorer en el servidor para permitir que el archivo se descargue.
+
+3. Reinicie IIS con el comando `net stop was /y && net start w3svc`
+
+4. Descargue e instale el módulo de reescritura de URL de IIS desde https://www.iis.net/downloads/microsoft/url-rewrite . Haga esto descargando el archivo a su máquina local y copiándolo al servidor a través del escritorio remoto, o agregando `https://www.iis.net` y `https://webpihandler.azurewebsites.net` a los "Sitios confiables" en la configuración de seguridad de Internet Explorer en el servidor para permitir que el archivo se descargue.
+
+### Crear base de datos Azure SQL
+
+A continuación, crearemos una nueva base de datos de SQL Server para la aplicación en la nube mediante el servicio Azure SQL Database.
+
+1. Vaya a la sección **Bases de datos SQL** del portal de Azure, puede encontrar esto ingresando "SQL" en la barra de búsqueda principal y seleccionando el servicio "Bases de datos SQL".
+
+2. Haga clic en "Agregar" o "Crear base de datos SQL".
+
+3. **Lo esencial**
+- **Grupo de recursos** : seleccione el mismo grupo de recursos en el que se encuentra la máquina virtual de Windows Server (por ejemplo, mi grupo de recursos).
+- **Nombre de la base de datos** : ingrese un nombre para la base de datos SQL (por ejemplo, my-sql-db).
+- **Servidor** : haga clic en "Crear nuevo".
+  - Nombre del servidor : ingrese un nombre único global para el servidor, se usará para crear la URL del servidor Azure SQL: `<server-name>.database.windows.net.`
+  - **Inicio de sesión del administrador del servidor** : ingrese el nombre de usuario del administrador para el servidor Azure SQL.
+  - **Contraseña** : ingrese la contraseña de administrador para el servidor Azure SQL.
+  - **Confirmar contraseña** : vuelva a ingresar la contraseña de administrador para el servidor Azure SQL.
+  - **Ubicación** : seleccione la misma región que la máquina virtual de Windows Server.
+- **Cómputo + almacenamiento** : haga clic en "Configurar base de datos", luego seleccione "Básico" y haga clic en el botón "Aplicar".
+
+4. **Redes**
+- Método de conectividad : seleccione "Punto final público".
+- Permitir que los servicios y recursos de Azure accedan a este servidor : seleccione "Sí".
+
+5. **Revisar + crear** : haz clic en "Crear".
+
+### Crear e implementar la API back-end de ASP.NET Core en Azure
+
+Siga estos pasos para clonar y compilar la API ASP.NET Core en su máquina local y luego implementarla en el servidor.
+
+1. Clonar el proyecto ASP.NET Core API en una carpeta en su máquina local con el comando git clone `https://github.com/FernandoCalmet/DOTNET-6-ASPNET-Core-API-JWT-CRUD.git`. Si no tiene instalada la CLI de Git, puede descargarla desde https://git-scm.com/downloads . El proyecto de back-end tiene como nombre `CRUDWebAPI`.
+
+2. Actualice la cadena de conexión de la base de datos para que apunte a la nueva base de datos SQL de Azure:
+- En Azure Portal, vaya a la página de descripción general de la base de datos SQL creada en el paso anterior.
+- Haga clic en "Mostrar cadenas de conexión de la base de datos" y copie la cadena de conexión "ADO.NET (autenticación SQL)".
+- Abra el archivo de configuración de la aplicación ASP.NET Core (`/appsettings.json`) en un editor de texto.
+- Reemplace el valor de la `DefaultConnection` cadena de conexión con el que acaba de copiar, para que se vea así:
+
+```
+"ConnectionStrings": {
+  "DefaultConnection": "Server=tcp:{server_name},1433;Initial Catalog={database_name};Persist Security Info=False;User ID={user_name};Password={your_password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+},
+```
+
+- Dentro de la cadena de conexión, reemplácela `{your_password}` con la contraseña de administrador del servidor Azure SQL que creó al configurar la base de datos.
+
+3. Actualice el secreto de firma del token JWT:
+- Abra el archivo de configuración de la aplicación ASP.NET Core (`/appsettings.json`) en un editor de texto.
+- Reemplace el valor de la configuración de la aplicación `Secret` con su propia cadena aleatoria, una forma rápida y fácil es generar un par de GUID y unirlos para crear una cadena aleatoria larga (por ejemplo, de https://www.guidgenerator.com/ ).
+
+4. Cree la API con el comando `dotnet publish --configuration Release` desde la carpeta raíz del proyecto (donde se encuentra el archivo WebApi.csproj). Si no tiene instalado .NET Core SDK, puede descargarlo desde https://www.microsoft.com/net/download/core .
+
+5. Copie los archivos del directorio `aspnet-core-3-registration-login-api\bin\Release\netcoreapp3.1\publish` al directorio `C:\Projects\back-end` en el servidor a través del escritorio remoto.
+  
+Los archivos de la API de ASP.NET Core ahora están implementados en el servidor, pero la API aún no está en funcionamiento; esto sucederá cuando configuremos IIS en breve.
+
+### Crear e implementar la aplicación front-end de Angular en Azure
+
+Siga estos pasos para compilar la aplicación Angular en su máquina local y luego implementarla en el servidor de Azure.
+
+1. Clone el proyecto Angular a una carpeta en su máquina local con el comando git clone `https://github.com/FernandoCalmet/DOTNET-6-ASPNET-Core-API-JWT-CRUD.git`. Si no tiene instalada la CLI de Git, puede descargarla desde https://git-scm.com/downloads .El proyecto de back-end tiene como nombre `WebFrontEnd`.
+
+2. Navegue al directorio clonado e instale todos los paquetes de nodos requeridos con el comando `npm install`. Si necesita instalar Node.js (que incluye npm), puede descargarlo desde https://nodejs.org/ .
+
+3. Cree la aplicación Angular con el comando `npm run build`.
+
+4. Copie los archivos del directorio `angular-8-registration-login-crud\dist` al directorio `C:\Projects\front-end` en el servidor a través del escritorio remoto.
+
+### Configurar IIS para servir el front-end de Angular y la API de ASP.NET Core
+
+ado que nuestra aplicación Angular + ASP.NET Core se compone de dos proyectos separados a los que se debe acceder a través del mismo puerto (HTTP en el puerto 80), vamos a configurar un solo sitio en IIS para atender el frente de Angular. finalice la aplicación desde la ruta base ( /) y cree una aplicación secundaria para ASP.NET Core API que maneje todas las solicitudes que comiencen con la ruta /api.
+
+Siga estos pasos para configurar IIS para la aplicación de pila completa Angular + ASP.NET Core.
+
+1. Abra IIS en el servidor.
+2. Elimine el "Sitio web predeterminado" en Sitios y "DefaultAppPool" en Grupos de aplicaciones.
+3. Haga clic derecho en la carpeta Sitios y seleccione "Agregar sitio web".
+4. Ingrese el nombre del sitio (por ejemplo, mi aplicación).
+5. Establezca la ruta física al directorio de la aplicación Angular (`C:\Projects\front-end`).
+6. Deje el nombre de host vacío y haga clic en "Aceptar".
+7. Haga clic derecho en el nuevo sitio y seleccione "Agregar aplicación".
+8. Introduzca el alias "api" (sin comillas).
+9. Establezca la ruta física al directorio api de ASP.NET Core (`C:\Projects\back-end`).
+10. Haga clic en Aceptar".
+11. En Grupos de aplicaciones, haga clic con el botón derecho en el grupo de aplicaciones para el nuevo sitio y seleccione "Configuración básica". Cambie la versión de .NET CLR a 'Sin código administrado', las aplicaciones .NET Core no requieren .NET CLR.
+12. Cree un archivo llamado "web.config" dentro de la carpeta front-end de Angular (`C:\Projects\front-end`) y agregue la siguiente configuración:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <system.webServer>
+        <staticContent>
+            <remove fileExtension=".js" />
+            <mimeMap fileExtension=".js" mimeType="application/javascript; charset=UTF-8" />
+        </staticContent>
+        <rewrite>
+            <rules>
+                <rule name="Angular" stopProcessing="true">
+                    <match url=".*" />
+                    <conditions logicalGrouping="MatchAll">
+                        <add input="{REQUEST_URI}" pattern="^/api/.*" negate="true" />
+                        <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" />
+                        <add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" />
+                    </conditions>
+                    <action type="Rewrite" url="/" />
+                </rule>
+            </rules>
+        </rewrite>
+    </system.webServer>
+</configuration>
+```
+
+La configuración `<staticContent>` establece la codificación de caracteres en "UTF-8" para los archivos javascript, lo que evita que los caracteres Unicode en su javascript se conviertan antes de enviarse al navegador, lo que puede causar errores (por ejemplo, errores de expresión regular no válidos).
+
+La configuración `<rewrite>` crea una regla de reescritura que permite actualizar la aplicación Angular sin obtener errores 404.
+
+### Pruebe su nueva aplicación Angular + ASP.NET Core + SQL Server ejecutándose en Azure
+
+ngrese la dirección IP pública de su Azure Windows Server en un navegador para acceder y probar su nueva aplicación de pila completa Angular + ASP.NET Core + Azure SQL Server.
+
+La dirección IP pública se puede ubicar en la página de descripción general de la máquina virtual en el portal de Microsoft Azure.
 
 ## 📥 DEPENDENCIAS
 
