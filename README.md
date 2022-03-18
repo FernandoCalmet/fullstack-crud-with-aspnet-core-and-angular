@@ -33,8 +33,8 @@
   * [Configuración de la aplicación .NET 6 (Desarrollo)](#configuraci%C3%B3n-de-la-aplicaci%C3%B3n-net-6-desarrollo)
   * [Configuración de la aplicación .NET 6](#configuraci%C3%B3n-de-la-aplicaci%C3%B3n-net-6)
   * [Configuración OmniSharp](#configuraci%C3%B3n-omnisharp)
-  * [Programa .NET 6](#programa-net-6)(#net-6-api-web-csproj)
-  * [.NET 6 API web csproj]
+  * [Programa .NET 6](#programa-net-6)
+  * [.NET 6 API web csproj](#net-6-api-web-csproj)
 * [Despliegue en Azure](#despliegue-en-azure)
   * [Crear un nuevo servidor de Windows en Microsoft Azure](#crear-un-nuevo-servidor-de-windows-en-microsoft-azure)
   * [Conectarse a la instancia de Azure Windows Server a través de RDP](#conectarse-a-la-instancia-de-azure-windows-server-a-trav%C3%A9s-de-rdp)
