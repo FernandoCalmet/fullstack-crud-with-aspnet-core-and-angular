@@ -10,7 +10,40 @@
 * [Acerca del proyecto](#acerca-del-proyecto)
 * [Instalación](#instalación)
 * [Resumen Teórico](#resumen-teórico)
+  * [Permitir atributo anónimo .NET](#permitir-atributo-an%C3%B3nimo-net)
+  * [Atributo de autorización personalizado de .NET](#atributo-de-autorizaci%C3%B3n-personalizado-de-net)
+  * [Middleware de JWT personalizado de .NET](#middleware-de-jwt-personalizado-de-net)
+  * [Utilidades de .NET JWT](#utilidades-de-net-jwt)
+  * [Controlador de usuarios de .NET](#controlador-de-usuarios-de-net)
+  * [Entidad de usuario de .NET](#entidad-de-usuario-de-net)
+  * [Excepción de aplicación personalizada de .NET](#excepci%C3%B3n-de-aplicaci%C3%B3n-personalizada-de-net)
+  * [Configuración de la aplicación .NET](#configuraci%C3%B3n-de-la-aplicaci%C3%B3n-net)
+  * [Perfil de .NET AutoMapper](#perfil-de-net-automapper)
+  * [Contexto de datos .NET](#contexto-de-datos-net)
+  * [Middleware del controlador de errores globales .NET](#middleware-del-controlador-de-errores-globales-net)
+  * [Contexto de datos SQLite de .NET](#contexto-de-datos-sqlite-de-net)
+  * [Migraciones de EF Core SQLite](#migraciones-de-ef-core-sqlite)
+  * [Migraciones de EF Core SQL Server](#migraciones-de-ef-core-sql-server)
+  * [Modelo de solicitud de autenticación de .NET](#modelo-de-solicitud-de-autenticaci%C3%B3n-de-net)
+  * [Modelo de respuesta de autenticación de .NET](#modelo-de-respuesta-de-autenticaci%C3%B3n-de-net)
+  * [Modelo de solicitud de registro](#modelo-de-solicitud-de-registro)
+  * [Modelo de solicitud de actualización](#modelo-de-solicitud-de-actualizaci%C3%B3n)
+  * [Configuración de lanzamiento de .NET.json](#configuraci%C3%B3n-de-lanzamiento-de-netjson)
+  * [Servicio de usuario .NET](#servicio-de-usuario-net)
+  * [Configuración de la aplicación .NET 6 (Desarrollo)](#configuraci%C3%B3n-de-la-aplicaci%C3%B3n-net-6-desarrollo)
+  * [Configuración de la aplicación .NET 6](#configuraci%C3%B3n-de-la-aplicaci%C3%B3n-net-6)
+  * [Configuración OmniSharp](#configuraci%C3%B3n-omnisharp)
+  * [Programa .NET 6](#programa-net-6)(#net-6-api-web-csproj)
+  * [.NET 6 API web csproj]
 * [Despliegue en Azure](#despliegue-en-azure)
+  * [Crear un nuevo servidor de Windows en Microsoft Azure](#crear-un-nuevo-servidor-de-windows-en-microsoft-azure)
+  * [Conectarse a la instancia de Azure Windows Server a través de RDP](#conectarse-a-la-instancia-de-azure-windows-server-a-trav%C3%A9s-de-rdp)
+  * [Configuración del servidor web con IIS (Servicios de información de Internet)](#configuraci%C3%B3n-del-servidor-web-con-iis-servicios-de-informaci%C3%B3n-de-internet)
+  * [Crear base de datos Azure SQL](#crear-base-de-datos-azure-sql)
+  * [Crear e implementar la API back-end de ASP.NET Core en Azure](#crear-e-implementar-la-api-back-end-de-aspnet-core-en-azure)
+  * [Crear e implementar la aplicación front-end de Angular en Azure](#crear-e-implementar-la-aplicaci%C3%B3n-front-end-de-angular-en-azure)
+  * [Configurar IIS para servir el front-end de Angular y la API de ASP.NET Core](#configurar-iis-para-servir-el-front-end-de-angular-y-la-api-de-aspnet-core)
+  * [Prueba de la aplicación Angular + ASP.NET Core + SQL Server ejecutándose en Azure](#prueba-de-la-aplicaci%C3%B3n-angular--aspnet-core--sql-server-ejecut%C3%A1ndose-en-azure)
 * [Dependencias](#dependencias)
 * [Licencia](#licencia)
 
@@ -304,7 +337,7 @@ Para obtener más información sobre el archivo de proyecto de C#, consulte .NET
 
 ## DESPLIEGUE EN AZURE
 
-### Cree un nuevo servidor de Windows en Microsoft Azure
+### Crear un nuevo servidor de Windows en Microsoft Azure
 
 Antes de hacer nada, necesitamos un servidor en el que podamos trabajar, siga estos pasos para activar una nueva instancia de Windows Server 2019 utilizando el servicio Azure Virtual Machines.
 
@@ -328,7 +361,7 @@ Antes de hacer nada, necesitamos un servidor en el que podamos trabajar, siga es
 
 6. **Revisar + crear** : haz clic en "Crear".
 
-### Conéctese a la instancia de Azure Windows Server a través de RDP
+### Conectarse a la instancia de Azure Windows Server a través de RDP
 
 Una vez que la VM de Azure Windows Server esté lista, puede conectarse a ella a través de RDP (Protocolo de escritorio remoto). Si está en Windows, debe tener un cliente RDP instalado de forma predeterminada, si está en Mac OSX, puede instalar un cliente RDP desde la tienda de aplicaciones aquí .
 
@@ -478,7 +511,7 @@ La configuración `<staticContent>` establece la codificación de caracteres en 
 
 La configuración `<rewrite>` crea una regla de reescritura que permite actualizar la aplicación Angular sin obtener errores 404.
 
-### Pruebe su nueva aplicación Angular + ASP.NET Core + SQL Server ejecutándose en Azure
+### Pruebar la aplicación Angular + ASP.NET Core + SQL Server ejecutándose en Azure
 
 ngrese la dirección IP pública de su Azure Windows Server en un navegador para acceder y probar su nueva aplicación de pila completa Angular + ASP.NET Core + Azure SQL Server.
 
