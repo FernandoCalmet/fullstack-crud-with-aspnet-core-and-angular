@@ -66,7 +66,7 @@
 Clonar el repositorio.
 
 ```bash
-gh repo clone FernandoCalmet/DOTNET-6-ASPNET-Core-API-JWT-CRUD
+gh repo clone FernandoCalmet/dotnet-6-aspnet-core-api-jwt-crud
 ```
 
 Crear migración de base de datos.
